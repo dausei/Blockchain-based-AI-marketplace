@@ -1,0 +1,87 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background-color: #f0f2f5;
+    color: #333;
+}
+
+h1 {
+    color: #222;
+    text-align: center;
+}
+
+h2 {
+    color: #444;
+    margin-top: 30px;
+}
+
+form, .actions {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+}
+
+input, button {
+    padding: 10px;
+    margin: 5px 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+button {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #218838;
+}
+
+#showModelsButton {
+    margin-top: 20px;
+    width: auto;
+}
+
+#modelList {
+    margin-top: 20px;
+}
+
+.model {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+}
+
+.model strong {
+    display: block;
+    font-size: 1.2em;
+    margin-bottom: 5px;
+}
+
+.model p {
+    margin: 5px 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
+
+.actions {
+    margin-top: 20px;
+}
+
+@media (min-width: 600px) {
+    form, .actions {
+        width: 50%;
+        margin: 0 auto;
+    }
+}

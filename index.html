@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Model Marketplace</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>AI Model Marketplace</h1>
+
+    <h2>List a New AI Model</h2>
+    <form id="listModelForm">
+        <input type="text" id="modelName" placeholder="Model Name" required>
+        <input type="text" id="modelDescription" placeholder="Description" required>
+        <input type="number" id="modelPrice" placeholder="Price (in wei)" required>
+        <button type="submit">List Model</button>
+    </form>
+
+    <button id="showModelsButton">Show Available Models</button>
+    <div id="modelList" style="display: none;"></div>
+
+    <h2>Purchase a Model</h2>
+    <input type="number" id="purchaseModelId" placeholder="Model ID">
+    <button id="purchaseModelButton">Purchase Model</button>
+
+    <h2>Rate a Model</h2>
+    <input type="number" id="rateModelId" placeholder="Model ID">
+    <input type="number" id="modelRating" placeholder="Rating (1-5)">
+    <button id="rateModelButton">Rate Model</button>
+
+    <h2>Withdraw Funds</h2>
+    <button id="withdrawFundsButton">Withdraw Funds</button>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.6.0/web3.min.js"></script>
+    <script>
+        let contract;
+        const contractAddress = '0x90a67539F49cDbF7eAd694267ED7aff24d55Cb6d'; 
+        let contractABI;
+
+        async function fetchABI() {
+            const response = await fetch('abi.json');
+            contractABI = await response.json();
+            initializeContract();
+        }
+
+        // Initialize contract
+        async function initializeContract() {
+            if (typeof window.ethereum === 'undefined') {
+                alert('MetaMask is not installed!');
+                return;
+            }
+
+            const web3 = new Web3(window.ethereum);
+            contract = new web3.eth.Contract(contractABI, contractAddress);
+        }
+
+        window.onload = fetchABI;
+
+        document.getElementById('listModelForm').onsubmit = async (event) => {
+            event.preventDefault();
+            try {
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const name = document.getElementById('modelName').value;
+                const description = document.getElementById('modelDescription').value;
+                const price = document.getElementById('modelPrice').value;
+
+                await contract.methods.listModel(name, description, price).send({ from: accounts[0] });
+                alert('Model listed successfully!');
+            } catch (error) {
+                console.error(error);
+                alert(`Error listing model: ${error.message}`);
+            }
+        };
+
+        document.getElementById('purchaseModelButton').onclick = async () => {
+            try {
+                const modelId = parseInt(document.getElementById('purchaseModelId').value);
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const model = await contract.methods.models(modelId).call();
+
+                const priceInWei = model.price.toString();
+
+                await contract.methods.purchaseModel(modelId).send({ from: accounts[0], value: priceInWei });
+                alert('Model purchased successfully!');
+            } catch (error) {
+                console.error(error);
+                alert(`Error purchasing model: ${error.message}`);
+            }
+        };
+
+        document.getElementById('rateModelButton').onclick = async () => {
+            try {
+                const modelId = parseInt(document.getElementById('rateModelId').value);
+                const rating = parseInt(document.getElementById('modelRating').value);
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+
+                await contract.methods.rateModel(modelId, rating).send({ from: accounts[0] });
+                alert('Model rated successfully!');
+            } catch (error) {
+                console.error(error);
+                alert(`Error rating model: ${error.message}`);
+            }
+        };
+
+        document.getElementById('withdrawFundsButton').onclick = async () => {
+            try {
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                await contract.methods.withdrawFunds().send({ from: accounts[0] });
+                alert('Funds withdrawn successfully!');
+            } catch (error) {
+                console.error(error);
+                alert(`Error withdrawing funds: ${error.message}`);
+            }
+        };
+
+        document.getElementById('showModelsButton').onclick = async () => {
+            const modelListDiv = document.getElementById('modelList');
+            if (modelListDiv.style.display === 'none') {
+                await loadModels();
+                modelListDiv.style.display = 'block';
+                document.getElementById('showModelsButton').innerText = 'Hide Available Models';
+            } else {
+                modelListDiv.style.display = 'none';
+                document.getElementById('showModelsButton').innerText = 'Show Available Models';
+            }
+        };
+
+        async function loadModels() {
+            try {
+                const modelList = document.getElementById('modelList');
+                modelList.innerHTML = '';
+
+                const modelCount = await contract.methods.modelCount().call();
+
+                for (let i = 0; i < modelCount; i++) {
+                    const model = await contract.methods.models(i).call();
+                    const averageRating = model.ratingCount > 0 ? (model.totalRating / model.ratingCount).toFixed(1) : 'N/A';
+
+                    modelList.innerHTML += `
+                        <div class="model">
+                            <strong>ID: ${i}</strong>
+                            <p><strong>Name:</strong> ${model.name}</p>
+                            <p><strong>Description:</strong> ${model.description}</p>
+                            <p><strong>Price:</strong> ${model.price} wei</p>
+                            <p><strong>Creator:</strong> ${model.creator}</p>
+                            <p><strong>Owner:</strong> ${model.owner}</p>
+                            <p><strong>Average Rating:</strong> ${averageRating}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error(error);
+                alert(`Error loading models: ${error.message}`);
+            }
+        }
+    </script>
+</body>
+</html>
