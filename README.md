@@ -1,7 +1,5 @@
 # Blockchain-based-AI_models-marketplace
 
-Simple overview of use/purpose.
-
 ## Description
 
 This is Javascript Node and Solidity based simple marketplace with functionality to buy an AI model for a ETH in wei.
