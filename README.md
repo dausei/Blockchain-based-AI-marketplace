@@ -33,10 +33,11 @@ This app allows you to add a new model which parameters was written in solidity 
 * Now there you can see the uniqe ID for youre model
 * Buy Rate or Withdraw funds
 <img width="1435" alt="image" src="https://github.com/user-attachments/assets/052d46c3-12e9-455b-ac62-fa81b90f00c6">
-## Authors
 
-ex. Toleugazy Daulet 
-ex. [@DomPizzie](https://www.linkedin.com/feed/)
+### Authors
+
+ Toleugazy Daulet 
+ [@Toleugazy Daulet](https://www.linkedin.com/feed/)
 
 
 ## License
